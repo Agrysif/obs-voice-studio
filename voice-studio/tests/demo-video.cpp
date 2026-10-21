@@ -131,8 +131,9 @@ double hash01(int i)
 }
 
 namespace col {
-const QColor bg(0x0D, 0x0D, 0x0F), panel(0x15, 0x15, 0x18), panel2(0x1D, 0x1D, 0x22), line(0x2E, 0x2E, 0x35);
-const QColor orange(0xFF, 0x4B, 0x1F), coral(0xF4, 0x7A, 0x57), violet(0x8C, 0x3B, 0xFF), violet2(0xB3, 0x82, 0xFF);
+const QColor bg(0x0A, 0x0C, 0x12), panel(0x12, 0x15, 0x1E), panel2(0x1A, 0x1E, 0x29), line(0x2A, 0x30, 0x40);
+// Один цвет — синий плагина (как акцент в окне OBS и в README) и его оттенки.
+const QColor accent(0x2F, 0x6F, 0xF0), accent_lt(0x8D, 0xB2, 0xFF), accent_dk(0x17, 0x3A, 0x8C);
 const QColor white(0xF4, 0xF4, 0xF6), gray(0x9A, 0x9A, 0xA6), dim(0x5E, 0x5E, 0x68);
 } // namespace col
 
@@ -193,6 +194,13 @@ const std::map<QString, QString> kIcons = {
 	{"chat", R"(<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>)"},
 	{"x", R"(<path d="M6 6l12 12M18 6L6 18"/>)"},
 	{"play", R"(<path d="M7 4l13 8-13 8z"/>)"},
+	{"search", R"(<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>)"},
+	{"bell", R"(<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>)"},
+	{"chevrons", R"(<path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/>)"},
+	{"users", R"(<circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/>)"},
+	{"star", R"(<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/>)"},
+	{"user", R"(<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/>)"},
+	{"gem", R"(<path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/><path d="M12 21L8 9l4-6 4 6z"/>)"},
 };
 
 std::map<QString, QImage> g_icon_cache;
@@ -273,19 +281,19 @@ void tag_line(QPainter &p, QPointF pos, const QString &prefix, const QString &te
 	p.save();
 	p.setOpacity(p.opacity() * (1 - ease_in(out)));
 	p.fillRect(QRectF(pos.x(), pos.y(), full_w * k, h), QColor(0x0D, 0x0D, 0x0F, 240));
-	p.fillRect(QRectF(pos.x(), pos.y(), 5, h), col::orange);
+	p.fillRect(QRectF(pos.x(), pos.y(), 5, h), col::accent);
 	p.setClipRect(QRectF(pos.x(), pos.y(), full_w * k, h));
 	p.setFont(f);
 	const double base = pos.y() + h / 2 + fm.capHeight() / 2;
 	double x = pos.x() + px * 0.6;
-	p.setPen(col::orange);
+	p.setPen(col::accent);
 	p.drawText(QPointF(x, base), head);
 	x += fm.horizontalAdvance(head + QStringLiteral(" "));
 	p.setPen(col::white);
 	p.drawText(QPointF(x, base), shown);
 	x += fm.horizontalAdvance(shown);
 	if (n < text.size() || std::fmod(local, 0.66) < 0.38) {
-		p.setPen(col::orange);
+		p.setPen(col::accent);
 		p.drawText(QPointF(x, base), QStringLiteral("_"));
 	}
 	p.restore();
@@ -310,7 +318,7 @@ void hud(QPainter &p, const QString &section, int index, int total, double local
 	const double base = r.center().y() + fm.capHeight() / 2;
 	p.setPen(col::white);
 	p.drawText(QPointF(r.left() + 22, base), QStringLiteral("VOICE STUDIO"));
-	p.setPen(col::orange);
+	p.setPen(col::accent);
 	const double x2 = r.left() + 22 + fm.horizontalAdvance(QStringLiteral("VOICE STUDIO  "));
 	p.drawText(QPointF(x2, base), QStringLiteral(">>"));
 	p.setPen(col::gray);
@@ -599,7 +607,7 @@ struct Script {
 
 Script script_for(bool ru)
 {
-	const QColor u1 = col::orange, u2 = col::violet2, u3 = col::coral, u4 = col::white, u5 = QColor(0xFF, 0xB1, 0x99),
+	const QColor u1 = col::accent, u2 = col::accent_lt, u3 = col::accent_lt, u4 = col::white, u5 = QColor(0xFF, 0xB1, 0x99),
 		     u6 = QColor(0xC9, 0xA8, 0xFF);
 	Script s;
 	if (ru) {
@@ -643,7 +651,7 @@ Script script_for(bool ru)
 		s.channel = QStringLiteral("твой_канал");
 		s.stream_title = QStringLiteral("Вечерний стрим: болтаем и играем");
 		s.viewers_word = QStringLiteral("ЗРИТЕЛЕЙ");
-		s.follow = QStringLiteral("ПОДПИСАТЬСЯ");
+		s.follow = QStringLiteral("Отслеживать");
 		s.chat_head = QStringLiteral("ЧАТ ТРАНСЛЯЦИИ");
 		s.chat_before = {{"kirill_88", "что за шум??", u1},  {"nastya_k", "микро трещит", u2},
 				 {"max_play", "тебя плохо слышно", u3}, {"zloy_kot", "выключи вентилятор пж", u4},
@@ -713,7 +721,7 @@ Script script_for(bool ru)
 		s.channel = QStringLiteral("your_channel");
 		s.stream_title = QStringLiteral("Late night stream: chatting & gaming");
 		s.viewers_word = QStringLiteral("VIEWERS");
-		s.follow = QStringLiteral("FOLLOW");
+		s.follow = QStringLiteral("Follow");
 		s.chat_head = QStringLiteral("STREAM CHAT");
 		s.chat_before = {{"kevin_88", "what's that noise??", u1}, {"nastya_k", "mic is crackling", u2},
 				 {"max_play", "can barely hear you", u3}, {"grumpy_cat", "turn off the fan pls", u4},
@@ -755,67 +763,86 @@ const Lang kLangs[] = {{"en-US", "ENGLISH"},  {"be-BY", "БЕЛАРУСКАЯ"},
 		       {"tt-RU", "ТАТАРЧА"},  {"ba-RU", "БАШҠОРТСА"},    {"ru-RU", "РУССКИЙ"}};
 
 // ---------------------------------------------------------------------------
-// Трансляция (условная площадка, без чужих логотипов), плоская графика
+// Трансляция в духе Twitch: тёмная тема, фиолетовые кнопки, красный счётчик зрителей,
+// чат справа. Узнаваемо, но без чужих логотипов и названий.
 
 struct ChatLine {
 	Msg msg;
 	double at;
 };
 
+namespace tw {
+const QColor bg(0x0E, 0x0E, 0x10), panel(0x18, 0x18, 0x1B), panel2(0x1F, 0x1F, 0x23), line(0x2F, 0x2F, 0x35);
+const QColor purple(0x91, 0x46, 0xFF), live(0xEB, 0x04, 0x00), text(0xEF, 0xEF, 0xF1), sub(0xAD, 0xAD, 0xB8);
+const QColor names[] = {QColor(0xFF, 0x7F, 0x50), QColor(0x1E, 0x90, 0xFF), QColor(0x9A, 0xCD, 0x32), QColor(0xFF, 0x69, 0xB4),
+			QColor(0x00, 0xC8, 0x7A), QColor(0xDA, 0xA5, 0x20), QColor(0xB0, 0x7C, 0xFF), QColor(0x5F, 0x9E, 0xA0)};
+
+QFont ui(double px, int weight = QFont::Normal)
+{
+	QFont f(QStringLiteral("Segoe UI"));
+	f.setPixelSize((int)std::lround(px));
+	f.setWeight(QFont::Weight(weight));
+	return f;
+}
+} // namespace tw
+
 class StreamView {
 public:
 	static constexpr int TW = 1600, TH = 900;
+	static constexpr double PX = 50, PY = 50, PW = 1210, PH = 681; // плеер
 
-	explicit StreamView(const Script &s) : s_(s)
+	explicit StreamView(const Script &s, bool ru) : s_(s), ru_(ru)
 	{
-		game_ = QImage(1200, 675, QImage::Format_ARGB32_Premultiplied);
+		// «Игра»: плоский пейзаж в синих тонах
+		game_ = QImage((int)PW, (int)PH, QImage::Format_ARGB32_Premultiplied);
 		QPainter p(&game_);
 		p.setRenderHint(QPainter::Antialiasing);
-		p.fillRect(game_.rect(), QColor(0x1A, 0x10, 0x33));
-		// Осколки, как на плакате
-		const QPointF c(880, 300);
-		const QColor cols[] = {col::violet, QColor(0x23, 0x15, 0x45), col::orange, QColor(0x2B, 0x1B, 0x55), col::coral,
-				       QColor(0x14, 0x0C, 0x28)};
-		double a = 0;
-		for (int i = 0; i < 14; i++) {
-			const double w = 0.25 + 0.35 * hash01(i * 11);
-			QPolygonF tri({c, c + QPointF(std::cos(a) * 1600, std::sin(a) * 1600),
-				       c + QPointF(std::cos(a + w) * 1600, std::sin(a + w) * 1600)});
-			p.setPen(Qt::NoPen);
-			p.setBrush(cols[i % 6]);
-			p.drawPolygon(tri);
-			a += w + 0.12;
+		p.fillRect(game_.rect(), QColor(0x14, 0x22, 0x44));
+		for (int i = 0; i < 6; i++)
+			p.fillRect(QRectF(0, i * 52, PW, 52), QColor(0x14 + i * 4, 0x22 + i * 5, 0x44 + i * 8));
+		p.setPen(Qt::NoPen);
+		p.setBrush(QColor(0xE8, 0xEE, 0xFF));
+		p.drawEllipse(QPointF(860, 210), 70, 70);
+		for (int layer = 0; layer < 3; layer++) {
+			QPainterPath m;
+			m.moveTo(0, PH);
+			for (int x = 0; x <= (int)PW; x += 70)
+				m.lineTo(x, 300 + layer * 60 + 90 * hash01(x * 3 + layer * 101) * (1.0 - layer * 0.25));
+			m.lineTo(PW, PH);
+			m.closeSubpath();
+			p.setBrush(QColor(0x1E + layer * 4, 0x33 + layer * 6, 0x66 - layer * 10));
+			p.drawPath(m);
 		}
-		// Клетчатый «пол»
-		checker(p, QRectF(0, 520, 1200, 155), 31, QColor(0x14, 0x0C, 0x28), QColor(0x2B, 0x1B, 0x55));
+		p.setBrush(QColor(0x0F, 0x18, 0x30));
+		p.drawRect(QRectF(0, 500, PW, PH - 500));
+		p.setPen(QPen(QColor(0x2F, 0x6F, 0xF0, 160), 2));
+		for (int i = -14; i <= 14; i++)
+			p.drawLine(QPointF(PW / 2 + i * 30, 500), QPointF(PW / 2 + i * 190, PH));
+		for (int i = 1; i < 7; i++) {
+			const double y = 500 + (PH - 500) * std::pow(i / 7.0, 1.8);
+			p.drawLine(QPointF(0, y), QPointF(PW, y));
+		}
 		p.end();
 
-		cam_ = QImage(230, 230, QImage::Format_ARGB32_Premultiplied);
-		cam_.fill(Qt::transparent);
-		QPainter c2(&cam_);
-		c2.setRenderHint(QPainter::Antialiasing);
-		c2.fillRect(cam_.rect(), QColor(0x22, 0x22, 0x28));
-		checker(c2, QRectF(0, 0, 230, 230), 23, QColor(0x22, 0x22, 0x28), QColor(0x2A, 0x2A, 0x31));
-		c2.setPen(Qt::NoPen);
-		c2.setBrush(QColor(0xE8, 0xE8, 0xEC));
-		c2.drawEllipse(QPointF(115, 96), 42, 48);
-		QPainterPath body;
-		body.addRoundedRect(QRectF(38, 156, 154, 110), 56, 56);
-		c2.setBrush(col::orange);
-		c2.drawPath(body);
-		c2.setClipPath(body);
-		checker(c2, QRectF(38, 156, 154, 110), 19, col::orange, col::coral);
-		c2.setClipping(false);
-		c2.setPen(QPen(QColor(0x15, 0x15, 0x18), 10, Qt::SolidLine, Qt::FlatCap));
-		c2.setBrush(Qt::NoBrush);
-		c2.drawArc(QRectF(62, 42, 106, 110), 20 * 16, 140 * 16);
-		c2.setPen(Qt::NoPen);
-		c2.setBrush(QColor(0x15, 0x15, 0x18));
-		c2.drawRect(QRectF(56, 92, 16, 34));
-		c2.drawRect(QRectF(158, 92, 16, 34));
-		c2.setPen(QPen(QColor(0x15, 0x15, 0x18), 5, Qt::SolidLine, Qt::FlatCap));
-		c2.drawLine(QPointF(66, 124), QPointF(98, 146));
-		c2.end();
+		cam_ = QImage(200, 200, QImage::Format_ARGB32_Premultiplied);
+		QPainter c(&cam_);
+		c.setRenderHint(QPainter::Antialiasing);
+		c.fillRect(cam_.rect(), QColor(0x22, 0x24, 0x2C));
+		c.setPen(Qt::NoPen);
+		c.setBrush(QColor(0xE6, 0xE8, 0xEE));
+		c.drawEllipse(QPointF(100, 84), 37, 42);
+		c.setBrush(col::accent);
+		c.drawRoundedRect(QRectF(33, 136, 134, 100), 50, 50);
+		c.setPen(QPen(QColor(0x15, 0x15, 0x18), 9, Qt::SolidLine, Qt::FlatCap));
+		c.setBrush(Qt::NoBrush);
+		c.drawArc(QRectF(54, 36, 92, 96), 20 * 16, 140 * 16);
+		c.setPen(Qt::NoPen);
+		c.setBrush(QColor(0x15, 0x15, 0x18));
+		c.drawRoundedRect(QRectF(48, 80, 14, 30), 4, 4);
+		c.drawRoundedRect(QRectF(138, 80, 14, 30), 4, 4);
+		c.setPen(QPen(QColor(0x15, 0x15, 0x18), 5, Qt::SolidLine, Qt::RoundCap));
+		c.drawLine(QPointF(57, 108), QPointF(84, 126));
+		c.end();
 	}
 
 	// Речь стримера: огибающая громкости.
@@ -829,44 +856,103 @@ public:
 	QImage render(double t, bool clean, double viewers, const std::vector<ChatLine> &chat, double follow_pop)
 	{
 		QImage img(TW, TH, QImage::Format_ARGB32_Premultiplied);
-		img.fill(col::panel);
+		img.fill(tw::bg);
 		QPainter p(&img);
 		p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
+		top_bar(p);
+		side_bar(p);
+		player(p, t, clean);
+		info(p, t, clean, viewers, follow_pop);
+		chat_panel(p, t, chat);
+		p.end();
+		return img;
+	}
 
-		// Видео: «игра» + камера стримера + звук
-		p.drawImage(QPointF(-10 + 10 * std::sin(t * 0.7), 0), game_);
-		const double env = speech(t);
-		const QPointF cam_c(155, 520);
-		p.fillRect(QRectF(cam_c - QPointF(123, 123), QSizeF(246, 246)), clean ? col::orange : col::coral);
-		p.drawImage(cam_c - QPointF(115, 115), cam_);
-		// Звуковые «кольца» у камеры — квадратные, плоские
-		for (int r = 0; r < 3; r++) {
-			const double d = 132 + r * 14 + env * 16;
-			QColor c = clean ? col::white : col::coral;
-			c.setAlphaF((0.8 - r * 0.25) * (0.3 + 0.7 * env));
-			p.setPen(QPen(c, 3, clean ? Qt::SolidLine : Qt::DashLine, Qt::FlatCap));
-			p.setBrush(Qt::NoBrush);
-			QRectF rr(cam_c - QPointF(d, d), QSizeF(2 * d, 2 * d));
-			if (!clean)
-				rr.translate((hash01((int)(t * 30) * 3 + r) - 0.5) * 8, (hash01((int)(t * 30) * 5 + r) - 0.5) * 8);
-			p.drawRect(rr);
+	// Где на текстуре счётчик зрителей и кнопка «Отслеживать» (для частиц).
+	static QPointF viewers_pos() { return QPointF(1150, 852); }
+	static QPointF follow_pos() { return QPointF(1170, 778); }
+
+private:
+	void top_bar(QPainter &p)
+	{
+		p.fillRect(QRectF(0, 0, TW, 50), tw::panel);
+		p.fillRect(QRectF(0, 49, TW, 1), QColor(0, 0, 0));
+		// Нейтральный значок площадки (не логотип)
+		p.setPen(Qt::NoPen);
+		p.setBrush(tw::purple);
+		p.drawRoundedRect(QRectF(14, 11, 28, 28), 6, 6);
+		draw_icon(p, "play", QPointF(28, 25), 16, Qt::white, 2.4);
+		p.setFont(tw::ui(17, QFont::DemiBold));
+		p.setPen(tw::text);
+		p.drawText(QPointF(64, 31), ru_ ? QStringLiteral("Отслеживаемое") : QStringLiteral("Following"));
+		p.drawText(QPointF(ru_ ? 204 : 166, 31), ru_ ? QStringLiteral("Просмотр") : QStringLiteral("Browse"));
+		const QRectF search(560, 9, 480, 32);
+		p.setBrush(tw::panel2);
+		p.setPen(QPen(QColor(0x3A, 0x3A, 0x3D), 1.5));
+		p.drawRoundedRect(search, 6, 6);
+		p.fillRect(QRectF(search.right() - 36, search.top() + 1, 35, search.height() - 2), QColor(0x2F, 0x2F, 0x35));
+		draw_icon(p, "search", QPointF(search.right() - 18, search.center().y()), 18, tw::sub, 2.2);
+		p.setFont(tw::ui(15));
+		p.setPen(tw::sub);
+		p.drawText(QPointF(search.left() + 12, search.center().y() + 5), ru_ ? QStringLiteral("Поиск") : QStringLiteral("Search"));
+		p.setPen(Qt::NoPen);
+		p.setBrush(col::accent);
+		p.drawEllipse(QPointF(TW - 30, 25), 15, 15);
+		draw_icon(p, "bell", QPointF(TW - 76, 25), 22, tw::text, 2.0);
+	}
+
+	void side_bar(QPainter &p)
+	{
+		p.fillRect(QRectF(0, 50, PX, TH - 50), tw::panel);
+		const QColor av[] = {QColor(0x4B, 0x7B, 0xEC), QColor(0xE0, 0x6C, 0x75), QColor(0x56, 0xB6, 0xC2), QColor(0xC6, 0x78, 0xDD),
+				     QColor(0x98, 0xC3, 0x79), QColor(0xE5, 0xC0, 0x7B), QColor(0x61, 0xAF, 0xEF)};
+		draw_icon(p, "chevrons", QPointF(PX / 2, 72), 20, tw::sub, 2.2);
+		for (int i = 0; i < 7; i++) {
+			p.setPen(Qt::NoPen);
+			p.setBrush(av[i]);
+			p.drawEllipse(QPointF(PX / 2, 110 + i * 46), 15, 15);
 		}
+	}
 
-		// Волна голоса
-		const QRectF wave(320, 580, 840, 72);
-		p.fillRect(wave, QColor(0x0D, 0x0D, 0x0F, 220));
-		p.fillRect(QRectF(wave.left(), wave.top(), 5, wave.height()), clean ? col::orange : col::coral);
-		draw_icon(p, clean ? "wave" : "noise", QPointF(wave.left() + 40, wave.center().y()), 34,
-			  clean ? col::orange : col::coral, 2.2);
+	void player(QPainter &p, double t, bool clean)
+	{
+		const QRectF pr(PX, PY, PW, PH);
+		p.save();
+		p.setClipRect(pr);
+		p.drawImage(QPointF(PX - 8 + 8 * std::sin(t * 0.6), PY), game_);
+		// Помехи без плагина: «битые» полосы и шум
+		if (!clean) {
+			for (int i = 0; i < 5; i++) {
+				const int seed = (int)(t * 14) * 31 + i;
+				if (hash01(seed) > 0.45) {
+					const double y = hash01(seed + 5) * (PH - 40), h = 4 + hash01(seed + 9) * 22;
+					p.drawImage(QRectF(PX + 18 * (hash01(seed + 3) - 0.5), PY + y, PW, h), game_, QRectF(0, y, PW, h));
+					p.fillRect(QRectF(PX, PY + y, PW, 2), QColor(255, 255, 255, 70));
+				}
+			}
+			for (int i = 0; i < 900; i++) {
+				const int seed = i * 97 + (int)(t * 30) * 7919;
+				p.setPen(QColor(255, 255, 255, (int)(90 * hash01(seed))));
+				p.drawPoint(QPointF(PX + hash01(seed + 1) * PW, PY + hash01(seed + 2) * PH));
+			}
+		}
+		// Наложения стримера из OBS: камера, звук, плашка
+		const QRectF cam(PX + 22, PY + PH - 22 - 200, 200, 200);
+		p.fillRect(cam.adjusted(-4, -4, 4, 4), clean ? col::accent : QColor(0x55, 0x55, 0x60));
+		p.drawImage(cam.topLeft(), cam_);
+		const double env = speech(t);
+		const QRectF wave(PX + 250, PY + PH - 86, 600, 64);
+		p.fillRect(wave, QColor(0x0D, 0x0D, 0x0F, 225));
+		p.fillRect(QRectF(wave.left(), wave.top(), 5, wave.height()), clean ? col::accent : QColor(0x77, 0x77, 0x82));
+		draw_icon(p, clean ? "mic" : "noise", QPointF(wave.left() + 36, wave.center().y()), 30, clean ? col::accent_lt : tw::sub, 2.2);
 		QPainterPath wpath;
-		const double x0 = wave.left() + 76, x1 = wave.right() - 20;
-		for (int i = 0; i <= 160; i++) {
-			const double x = x0 + i * (x1 - x0) / 160;
-			const double e = speech(t - (160 - i) * 0.012);
-			double y = std::sin(i * 0.9 + t * 30) * e * 26;
+		const double x0 = wave.left() + 66, x1 = wave.right() - 16;
+		for (int i = 0; i <= 130; i++) {
+			const double x = x0 + i * (x1 - x0) / 130;
+			const double e = speech(t - (130 - i) * 0.012);
+			double y = std::sin(i * 0.9 + t * 30) * e * 22;
 			if (!clean)
-				y = y * 0.7 + (hash01(i * 31 + (int)(t * 30) * 17) - 0.5) * 34 +
-				    (hash01(i + (int)(t * 30)) > 0.92 ? 30 : 0);
+				y = y * 0.7 + (hash01(i * 31 + (int)(t * 30) * 17) - 0.5) * 30 + (hash01(i + (int)(t * 30)) > 0.92 ? 24 : 0);
 			const QPointF pt(x, wave.center().y() + y);
 			if (i == 0)
 				wpath.moveTo(pt);
@@ -874,104 +960,178 @@ public:
 				wpath.lineTo(pt);
 		}
 		p.setBrush(Qt::NoBrush);
-		p.setPen(QPen(clean ? col::white : col::coral, 3));
+		p.setPen(QPen(clean ? Qt::white : tw::sub, 3));
 		p.drawPath(wpath);
-
-		// Помехи без плагина: «битые» полосы картинки
-		if (!clean) {
-			for (int i = 0; i < 5; i++) {
-				const int seed = (int)(t * 14) * 31 + i;
-				if (hash01(seed) > 0.45) {
-					const double y = hash01(seed + 5) * 640, h = 4 + hash01(seed + 9) * 22;
-					p.drawImage(QRectF(18 * (hash01(seed + 3) - 0.5), y, 1200, h), game_, QRectF(0, y, 1200, h));
-					p.fillRect(QRectF(0, y, 1200, 2), QColor(0xF4, 0x7A, 0x57, 120));
-				}
-			}
-		}
-
-		// Значки поверх видео
-		chip(p, QPointF(70, 42), QStringLiteral("LIVE"), 22, QColor(0xE5, 0x2B, 0x2B), Qt::white);
-		{
-			const QFont f = mono_font(22);
-			const QString vt = group_digits((long long)viewers);
-			const double w = QFontMetricsF(f).horizontalAdvance(vt) + 22 * 1.15 + 22 * 0.45 + 22 * 1.3;
-			chip(p, QPointF(124 + w / 2, 42), vt, 22, QColor(0x0D, 0x0D, 0x0F, 210), Qt::white, 1, 1, "eye");
-		}
+		(void)env;
 		{
 			const QString tag = clean ? s_.tag_after_badge : s_.tag_before_badge;
-			const QFont f = mono_font(22);
-			const double w = QFontMetricsF(f).horizontalAdvance(tag) + 22 * 1.15 + 22 * 0.45 + 22 * 1.3;
-			chip(p, QPointF(1200 - 24 - w / 2, 42), tag, 22, clean ? col::orange : QColor(0x0D, 0x0D, 0x0F, 220),
-			     clean ? col::bg : col::coral, 1, 1, clean ? "mic" : "x", clean ? QColor() : col::coral);
+			const QFont f = mono_font(20);
+			const double w = QFontMetricsF(f).horizontalAdvance(tag) + 20 * 1.15 + 20 * 0.45 + 20 * 1.3;
+			chip(p, QPointF(PX + PW - 20 - w / 2, PY + 34), tag, 20, clean ? col::accent : QColor(0x0D, 0x0D, 0x0F, 220),
+			     clean ? Qt::white : tw::sub, 1, 1, clean ? "mic" : "x", clean ? QColor() : QColor(0x55, 0x55, 0x60));
 		}
+		p.restore();
+	}
 
-		// Полоса под видео
-		p.fillRect(QRectF(0, 675, 1200, 225), col::panel);
-		p.fillRect(QRectF(0, 675, 1200, 2), col::line);
-		checker(p, QRectF(36, 708, 72, 72), 18, col::violet, col::violet2);
-		p.setFont(display_font(44));
-		p.setPen(col::white);
-		p.drawText(QPointF(128, 742), s_.channel.toUpper());
-		p.setFont(body_font(24));
-		p.setPen(col::gray);
-		p.drawText(QPointF(128, 776), s_.stream_title);
-		// Счётчик зрителей
-		p.setFont(display_font(96));
-		p.setPen(clean ? col::orange : col::white);
-		const QString vtext = group_digits((long long)viewers);
-		const double vw = QFontMetricsF(display_font(96)).horizontalAdvance(vtext);
-		p.drawText(QPointF(1160 - vw, 790), vtext);
-		draw_icon(p, "eye", QPointF(1160 - vw - 44, 760), 46, clean ? col::orange : col::gray, 2.2);
-		p.setFont(mono_font(20));
-		p.setPen(col::gray);
-		p.drawText(QPointF(1160 - QFontMetricsF(mono_font(20)).horizontalAdvance(s_.viewers_word), 822), s_.viewers_word);
-		{
-			const double k = 1 + 0.08 * follow_pop;
-			chip(p, QPointF(270, 846), s_.follow, 22, col::violet, Qt::white, k, 1, "heart");
+	void info(QPainter &p, double t, bool clean, double viewers, double follow_pop)
+	{
+		const double y0 = PY + PH;
+		p.fillRect(QRectF(PX, y0, PW, TH - y0), tw::bg);
+		// Аватар с красным кольцом «в эфире»
+		const QPointF av(PX + 48, y0 + 62);
+		p.setPen(QPen(tw::live, 4));
+		p.setBrush(col::accent);
+		p.drawEllipse(av, 34, 34);
+		draw_icon(p, "mic", av, 32, Qt::white, 2.4);
+		const QString live = ru_ ? QStringLiteral("В ЭФИРЕ") : QStringLiteral("LIVE");
+		p.setFont(tw::ui(13, QFont::Bold));
+		const double lw = QFontMetricsF(p.font()).horizontalAdvance(live) + 12;
+		p.setPen(Qt::NoPen);
+		p.setBrush(tw::live);
+		p.drawRoundedRect(QRectF(av.x() - lw / 2, av.y() + 26, lw, 20), 4, 4);
+		p.setPen(Qt::white);
+		p.drawText(QRectF(av.x() - lw / 2, av.y() + 26, lw, 20), Qt::AlignCenter, live);
+		// Название, заголовок, категория, теги
+		const double x = PX + 104;
+		p.setFont(tw::ui(22, QFont::Bold));
+		p.setPen(tw::text);
+		p.drawText(QPointF(x, y0 + 40), s_.channel);
+		p.setFont(tw::ui(17, QFont::DemiBold));
+		p.drawText(QPointF(x, y0 + 68), s_.stream_title);
+		p.setFont(tw::ui(16));
+		p.setPen(QColor(0xBF, 0x94, 0xFF));
+		p.drawText(QPointF(x, y0 + 94), ru_ ? QStringLiteral("Общение") : QStringLiteral("Just Chatting"));
+		double tx = x;
+		for (const QString &tag : ru_ ? QStringList{"Русский", "Подкаст", "ГолосоваяСтудия"} : QStringList{"English", "Podcast", "VoiceStudio"}) {
+			p.setFont(tw::ui(13, QFont::DemiBold));
+			const double w = QFontMetricsF(p.font()).horizontalAdvance(tag) + 18;
+			p.setPen(Qt::NoPen);
+			p.setBrush(QColor(0x2F, 0x2F, 0x35));
+			p.drawRoundedRect(QRectF(tx, y0 + 106, w, 24), 12, 12);
+			p.setPen(QColor(0xDE, 0xDE, 0xE3));
+			p.drawText(QRectF(tx, y0 + 106, w, 24), Qt::AlignCenter, tag);
+			tx += w + 8;
 		}
+		// Кнопки «Отслеживать» и «Подписаться»
+		const double k = 1 + 0.08 * follow_pop;
+		const QRectF fb(PX + PW - 20 - 180 * k, y0 + 14, 180 * k, 40);
+		p.setPen(Qt::NoPen);
+		p.setBrush(tw::purple);
+		p.drawRoundedRect(fb, 6, 6);
+		draw_icon(p, "heart", QPointF(fb.left() + 26, fb.center().y()), 20, Qt::white, 2.4);
+		p.setFont(tw::ui(17, QFont::DemiBold));
+		p.setPen(Qt::white);
+		p.drawText(fb.adjusted(40, 0, 0, 0), Qt::AlignVCenter | Qt::AlignLeft, s_.follow);
+		const QRectF sb(fb.left() - 10 - 190, y0 + 14, 190, 40);
+		p.setPen(Qt::NoPen);
+		p.setBrush(QColor(0x2F, 0x2F, 0x35));
+		p.drawRoundedRect(sb, 6, 6);
+		draw_icon(p, "star", QPointF(sb.left() + 24, sb.center().y()), 20, tw::text, 2.2);
+		p.setPen(tw::text);
+		p.drawText(sb.adjusted(40, 0, 0, 0), Qt::AlignVCenter | Qt::AlignLeft, ru_ ? QStringLiteral("Подписаться") : QStringLiteral("Subscribe"));
+		// Зрители — красным, как у площадки; время эфира
+		p.setFont(tw::ui(30, QFont::Bold));
+		const QString vt = group_digits((long long)viewers);
+		const double vw = QFontMetricsF(p.font()).horizontalAdvance(vt);
+		p.setPen(clean ? QColor(0xFF, 0x6B, 0x6B) : QColor(0xFF, 0x8A, 0x8A));
+		p.drawText(QPointF(PX + PW - 20 - vw, y0 + 112), vt);
+		draw_icon(p, "user", QPointF(PX + PW - 20 - vw - 22, y0 + 102), 26, QColor(0xFF, 0x6B, 0x6B), 2.4);
+		p.setFont(tw::ui(16, QFont::DemiBold));
+		p.setPen(tw::sub);
+		const int up = 4980 + (int)t;
+		const QString uptime = QStringLiteral("%1:%2:%3").arg(up / 3600).arg((up / 60) % 60, 2, 10, QChar('0')).arg(up % 60, 2, 10, QChar('0'));
+		p.drawText(QPointF(PX + PW - 20 - vw - 54 - QFontMetricsF(p.font()).horizontalAdvance(uptime), y0 + 108), uptime);
+	}
 
-		// Чат
-		p.fillRect(QRectF(1200, 0, 400, 900), QColor(0x11, 0x11, 0x14));
-		p.fillRect(QRectF(1200, 0, 2, 900), col::line);
-		draw_icon(p, "chat", QPointF(1232, 34), 26, col::orange, 2.2);
-		p.setFont(mono_font(20));
-		p.setPen(col::white);
-		p.drawText(QPointF(1256, 41), s_.chat_head);
-		p.fillRect(QRectF(1200, 66, 400, 2), col::line);
-		double y = 872;
-		const QFont uf = mono_font(21), mf = body_font(23);
-		for (auto it = chat.rbegin(); it != chat.rend() && y > 90; ++it) {
+	// Перенос сообщения: первая строка — после имени, остальные — с начала.
+	static QStringList wrap(const QString &text, const QFontMetricsF &fm, double first, double full)
+	{
+		QStringList lines;
+		QString cur;
+		double width = first;
+		for (const QString &w : text.split(' ')) {
+			const QString cand = cur.isEmpty() ? w : cur + ' ' + w;
+			if (fm.horizontalAdvance(cand) > width && !cur.isEmpty()) {
+				lines << cur;
+				cur = w;
+				width = full;
+			} else {
+				cur = cand;
+			}
+		}
+		if (!cur.isEmpty())
+			lines << cur;
+		return lines;
+	}
+
+	void chat_panel(QPainter &p, double t, const std::vector<ChatLine> &chat)
+	{
+		const double cx = PX + PW, cw = TW - cx;
+		p.fillRect(QRectF(cx, PY, cw, TH - PY), tw::panel);
+		p.fillRect(QRectF(cx, PY, 1, TH - PY), QColor(0, 0, 0));
+		p.setFont(tw::ui(15, QFont::DemiBold));
+		p.setPen(tw::text);
+		p.drawText(QRectF(cx, PY, cw, 50), Qt::AlignCenter, s_.chat_head);
+		draw_icon(p, "chevrons", QPointF(cx + 22, PY + 25), 18, tw::sub, 2.2);
+		draw_icon(p, "users", QPointF(TW - 22, PY + 25), 20, tw::sub, 2.2);
+		p.fillRect(QRectF(cx, PY + 50, cw, 1), tw::line);
+
+		const QFont nf = tw::ui(17, QFont::Bold), mf = tw::ui(17);
+		const QFontMetricsF nfm(nf), mfm(mf);
+		double y = TH - 96;
+		for (auto it = chat.rbegin(); it != chat.rend() && y > PY + 70; ++it) {
 			const double age = t - it->at;
 			if (age < 0)
 				continue;
-			const double k = ease_out(age / 0.22);
-			const QRectF box(1222 + (1 - k) * 60, 0, 356, 1000);
-			const QRectF tr = QFontMetricsF(mf).boundingRect(QRectF(0, 0, 356, 1000), Qt::TextWordWrap, it->msg.text);
-			const double h = QFontMetricsF(uf).height() + tr.height() + 6;
-			y -= h + 16;
+			const double k = ease_out(age / 0.2);
+			const int ci = (int)(hash01(qHash(it->msg.user) & 0xFFFF) * 8) % 8;
+			const QString name = it->msg.user;
+			const double badge = (qHash(name) % 3 == 0) ? 22 : 0;
+			const double name_w = badge + nfm.horizontalAdvance(name + ": ");
+			const QStringList lines = wrap(it->msg.text, mfm, cw - 30 - name_w, cw - 30);
+			const double h = lines.size() * 24 + 6;
+			y -= h;
 			p.save();
 			p.setOpacity(k);
-			if (age < 0.5)
-				p.fillRect(QRectF(1210, y - 6, 4, h + 12), it->msg.color);
-			p.setFont(uf);
-			p.setPen(it->msg.color);
-			p.drawText(QPointF(box.left(), y + QFontMetricsF(uf).ascent()), it->msg.user);
+			p.translate((1 - k) * 30, 0);
+			const double x = cx + 14;
+			if (badge > 0) {
+				p.setPen(Qt::NoPen);
+				p.setBrush(tw::purple);
+				p.drawRoundedRect(QRectF(x, y + 4, 18, 18), 3, 3);
+				draw_icon(p, "star", QPointF(x + 9, y + 13), 12, Qt::white, 2.6);
+			}
+			p.setFont(nf);
+			p.setPen(tw::names[ci]);
+			p.drawText(QPointF(x + badge, y + 19), name);
+			p.setPen(tw::text);
+			p.drawText(QPointF(x + badge + nfm.horizontalAdvance(name), y + 19), QStringLiteral(":"));
 			p.setFont(mf);
-			p.setPen(col::white);
-			p.drawText(QRectF(box.left(), y + QFontMetricsF(uf).height() + 4, 356, tr.height() + 4), Qt::TextWordWrap,
-				   it->msg.text);
+			for (int i = 0; i < lines.size(); i++)
+				p.drawText(QPointF(i == 0 ? x + name_w : x, y + 19 + i * 24), lines[i]);
 			p.restore();
+			y -= 8;
 		}
-		p.end();
-		return img;
+		// Поле ввода и кнопка «Чат»
+		const QRectF input(cx + 12, TH - 80, cw - 24, 36);
+		p.setPen(Qt::NoPen);
+		p.setBrush(tw::panel2);
+		p.drawRoundedRect(input, 6, 6);
+		p.setFont(tw::ui(15));
+		p.setPen(tw::sub);
+		p.drawText(input.adjusted(12, 0, 0, 0), Qt::AlignVCenter | Qt::AlignLeft,
+			   ru_ ? QStringLiteral("Отправить сообщение") : QStringLiteral("Send a message"));
+		const QRectF send(TW - 12 - 64, TH - 38, 64, 30);
+		p.setBrush(tw::purple);
+		p.drawRoundedRect(send, 5, 5);
+		p.setFont(tw::ui(15, QFont::DemiBold));
+		p.setPen(Qt::white);
+		p.drawText(send, Qt::AlignCenter, ru_ ? QStringLiteral("Чат") : QStringLiteral("Chat"));
+		draw_icon(p, "gem", QPointF(cx + 26, TH - 23), 20, tw::sub, 2.2);
 	}
 
-	// Где на текстуре счётчик зрителей, кнопка подписки и камера (для частиц).
-	static QPointF viewers_pos() { return QPointF(1010, 750); }
-	static QPointF follow_pos() { return QPointF(270, 846); }
-
-private:
 	const Script &s_;
+	bool ru_;
 	QImage game_, cam_;
 };
 
@@ -992,10 +1152,9 @@ std::shared_ptr<MockLink> g_factory_link;
 
 class Director {
 public:
-	Director(bool ru) : ru_(ru), s_(script_for(ru)), chrome_(chrome_for(ru)), stream_(s_)
+	Director(bool ru) : ru_(ru), s_(script_for(ru)), chrome_(chrome_for(ru)), stream_(s_, ru)
 	{
 		locale_ = ru ? "ru-RU" : "en-US";
-		build_shards();
 		build_languages();
 		link_ = make_link(locale_);
 		link_->set_preset("natural");
@@ -1058,7 +1217,7 @@ public:
 				     0.35 * std::exp(-(t - T_STAB1) * 16) * (t >= T_STAB1) +
 				     0.35 * std::exp(-(t - T_STAB2) * 16) * (t >= T_STAB2);
 		if (flash > 0.01)
-			p.fillRect(canvas.rect(), QColor(0xFF, 0x4B, 0x1F, (int)(255 * clamp01(flash))));
+			p.fillRect(canvas.rect(), QColor(col::accent.red(), col::accent.green(), col::accent.blue(), (int)(255 * clamp01(flash))));
 		const double black = std::max(1 - ramp(t, 0, 0.35), ramp(t, T_END - 0.4, T_END - 0.05));
 		if (black > 0)
 			p.fillRect(canvas.rect(), QColor(0, 0, 0, (int)(255 * black)));
@@ -1135,32 +1294,14 @@ private:
 	}
 	QPointF map_pt(QPointF pt) const { return card_tx_.map(pt * kDpr); }
 
-	QTransform draw_window(QPainter &p, const Pose &pose, QColor border = col::orange)
+	QTransform draw_window(QPainter &p, const Pose &pose, QColor border = col::accent)
 	{
 		const QImage img = card_image(win_.win);
 		card_tx_ = draw_card(p, img, kCard * kCardScale, pose, border, QColor(0, 0, 0, 190), 22);
 		return card_tx_;
 	}
 
-	// ----- заготовки: осколки фона, языки, окно обновления, карточки функций
-	struct Shard {
-		double a0, a1;
-		int color;
-	};
-	std::vector<Shard> shards_;
-
-	void build_shards()
-	{
-		double a = 0;
-		int i = 0;
-		while (a < 360) {
-			const double w = 9 + 26 * hash01(i * 7 + 1);
-			shards_.push_back({a, std::min(360.0, a + w), (int)(hash01(i * 13 + 5) * 4)});
-			a += w + 4 + 10 * hash01(i * 3 + 2);
-			i++;
-		}
-	}
-
+	// ----- заготовки: языки, окно обновления, карточки функций
 	void build_languages()
 	{
 		for (const Lang &l : kLangs)
@@ -1217,7 +1358,7 @@ private:
 			p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 			const bool violet = i % 2;
 			const QRectF art(0, 0, 1040, 760);
-			checker(p, art, 65, violet ? col::violet : col::orange, violet ? col::violet2 : col::coral);
+			checker(p, art, 65, violet ? col::accent_dk : col::accent, violet ? col::accent_lt : col::accent_lt);
 			// Осколок поверх клетки
 			p.setPen(Qt::NoPen);
 			p.setBrush(col::bg);
@@ -1229,7 +1370,7 @@ private:
 			p.drawText(QPointF(40, 80), QStringLiteral("[ %1/%2 ]").arg(i + 1, 2, 10, QChar('0')).arg(s_.features.size(), 2, 10, QChar('0')));
 			// Подпись
 			p.fillRect(QRectF(0, 760, 1040, 320), col::panel);
-			p.fillRect(QRectF(0, 760, 1040, 6), violet ? col::violet : col::orange);
+			p.fillRect(QRectF(0, 760, 1040, 6), violet ? col::accent_dk : col::accent);
 			p.setFont(display_font(120));
 			p.setPen(col::white);
 			p.drawText(QPointF(48, 900), f.title);
@@ -1238,10 +1379,10 @@ private:
 			p.drawText(QPointF(52, 970), f.desc);
 			chip(p, QPointF(110, 1032), QStringLiteral("FILTER"), 24, col::panel2, col::gray, 1, 1, QString(), col::line);
 			p.setFont(mono_font(64, QFont::Bold));
-			p.setPen(violet ? col::violet2 : col::orange);
+			p.setPen(violet ? col::accent_lt : col::accent);
 			const double vw = QFontMetricsF(mono_font(64, QFont::Bold)).horizontalAdvance(f.value);
 			p.drawText(QPointF(1000 - vw, 1040), f.value);
-			p.setPen(QPen(violet ? col::violet : col::orange, 6));
+			p.setPen(QPen(violet ? col::accent_dk : col::accent, 6));
 			p.setBrush(Qt::NoBrush);
 			p.drawRect(QRectF(3, 3, 1034, 1074));
 			feature_cards_.push_back(img);
@@ -1255,7 +1396,7 @@ private:
 		cursor_ = from + (to - from) * smooth(k);
 	}
 
-	void click(QPointF at, QColor c = col::orange)
+	void click(QPointF at, QColor c = col::accent)
 	{
 		ripples_.push_back({at, t_, c});
 		parts_.burst(at, 14, 160, 520, {c, col::white}, 0, 0.45, 9, 0);
@@ -1302,7 +1443,7 @@ private:
 	}
 
 	// Затемнить всё, кроме области, и поставить угловые скобки.
-	void spotlight(QPainter &p, const QPolygonF &q, double k, QColor c = col::orange)
+	void spotlight(QPainter &p, const QPolygonF &q, double k, QColor c = col::accent)
 	{
 		if (k <= 0)
 			return;
@@ -1363,91 +1504,54 @@ private:
 		if (e > 0.5) {
 			const QFont f = mono_font(28);
 			const double w = QFontMetricsF(f).horizontalAdvance(text) + 28 * 1.3;
-			chip(p, end + QPointF(w / 2, 0), text, 28, col::orange, col::bg, 1, clamp01((e - 0.5) * 3));
+			chip(p, end + QPointF(w / 2, 0), text, 28, col::accent, col::white, 1, clamp01((e - 0.5) * 3));
 		}
 	}
 
-	// ----- фон: осколки, клетка, кадр
-	struct Bg {
-		double shards, grid;
-		QPointF center;
-		int palette; // 0 — оранжевый, 1 — фиолетовый
-	};
-
-	Bg bg_at(double t) const
-	{
-		if (t < T_STREAM)
-			return {0.95, 0.5, QPointF(1450, 420), 0};
-		if (t < T_GROOVE)
-			return {0.45, 1.0, QPointF(300, 900), 1};
-		if (t < T_DROP)
-			return {0.18, 1.0, QPointF(1700, 200), 0};
-		if (t < T_AFTER)
-			return {0.9, 0.6, QPointF(960, 540), 0};
-		if (t < T_FEAT)
-			return {0.55, 0.8, QPointF(1600, 900), 1};
-		if (t < T_LANG)
-			return {0.7, 0.6, QPointF(1500, 300), 1};
-		if (t < T_BREAK)
-			return {0.4, 1.0, QPointF(960, 1200), 0};
-		if (t < T_DROP2)
-			return {0.18, 1.0, QPointF(200, 200), 1};
-		return {1.0, 0.5, QPointF(960, 470), 0};
-	}
-
-	void background(QPainter &p, double t)
+	// ----- фон: спокойная клетка одного цвета, без движения
+	void background(QPainter &p, double)
 	{
 		p.fillRect(QRectF(-50, -50, kW + 100, kH + 100), col::bg);
-		const Bg b = bg_at(t);
-		// Клетка: тонкая сетка и мигающие на долях клетки
-		if (b.grid > 0) {
-			const double cell = 64, off = std::fmod(t * 12, cell);
-			p.setPen(QPen(QColor(255, 255, 255, (int)(16 * b.grid)), 1));
-			for (double x = -cell + off; x < kW + cell; x += cell)
-				p.drawLine(QPointF(x, -50), QPointF(x, kH + 50));
-			for (double y = -cell + off * 0.5; y < kH + cell; y += cell)
-				p.drawLine(QPointF(-50, y), QPointF(kW + 50, y));
-			const int beat = beat_index(t);
-			for (int i = 0; i < 9; i++) {
-				const int seed = beat * 17 + i * 101;
-				const int cx = (int)(hash01(seed) * 30), cy = (int)(hash01(seed + 1) * 17);
-				QColor c = i % 3 == 0 ? col::violet : col::orange;
-				c.setAlphaF(0.22 * b.grid * (0.4 + 0.6 * pulse(t, 5)));
-				p.fillRect(QRectF(-cell + off + cx * cell, -cell + off * 0.5 + cy * cell, cell, cell), c);
-			}
+		const double cell = 60;
+		for (int i = 0; i * cell <= kW; i++) {
+			p.setPen(QPen(QColor(255, 255, 255, i % 4 == 0 ? 20 : 9), 1));
+			p.drawLine(QPointF(i * cell, -50), QPointF(i * cell, kH + 50));
 		}
-		// Осколки-лучи из точки; на каждый удар поворачиваются рывком.
-		if (b.shards > 0) {
-			int kicks = 0;
-			for (int k = 0; k < beat_index(t); k++)
-				kicks += kick(bt(k) + 0.01) > 0.4 ? 1 : 0;
-			const double snap = kick(t) > 0.4 ? ease_out(since_beat(t) / 0.12) : 1.0;
-			const double rot = t * 3 + (kicks + snap) * 5;
-			const QColor orange_set[] = {col::orange, col::coral, QColor(0x1B, 0x1B, 0x1F), col::orange};
-			const QColor violet_set[] = {col::violet, QColor(0x5A, 0x1F, 0xC0), QColor(0x1B, 0x1B, 0x1F), col::violet2};
-			p.save();
-			p.setOpacity(b.shards);
-			p.setPen(Qt::NoPen);
-			const double R = 2600 * (1 + 0.03 * pulse(t));
-			for (const Shard &s : shards_) {
-				const double a0 = (s.a0 + rot) * M_PI / 180, a1 = (s.a1 + rot) * M_PI / 180;
-				p.setBrush(b.palette ? violet_set[s.color] : orange_set[s.color]);
-				p.drawPolygon(QPolygonF({b.center, b.center + QPointF(std::cos(a0) * R, std::sin(a0) * R),
-							 b.center + QPointF(std::cos(a1) * R, std::sin(a1) * R)}));
-			}
-			p.restore();
-			// Затемнение, чтобы на ярких лучах читались карточки
-			p.fillRect(QRectF(-50, -50, kW + 100, kH + 100), QColor(0, 0, 0, (int)(255 * 0.35 * b.shards)));
+		for (int j = 0; j * cell <= kH; j++) {
+			p.setPen(QPen(QColor(255, 255, 255, j % 4 == 0 ? 20 : 9), 1));
+			p.drawLine(QPointF(-50, j * cell), QPointF(kW + 50, j * cell));
 		}
+		// Синие крестики на пересечениях крупной клетки
+		p.setPen(QPen(QColor(col::accent.red(), col::accent.green(), col::accent.blue(), 110), 2));
+		for (int i = 0; i * cell <= kW; i += 4)
+			for (int j = 0; j * cell <= kH; j += 4) {
+				const QPointF c(i * cell, j * cell);
+				p.drawLine(c - QPointF(7, 0), c + QPointF(7, 0));
+				p.drawLine(c - QPointF(0, 7), c + QPointF(0, 7));
+			}
 	}
 
+	// Синяя наклонная плашка поперёк экрана — графический приём вместо лучей.
+	void band(QPainter &p, double cy, double h, double local, double out, QColor c, bool from_left = true)
+	{
+		if (local <= 0 || out >= 1)
+			return;
+		const double k = ease_out(local / 0.35), ko = ease_in(out);
+		const double w = kW + 400;
+		double x = from_left ? lerp(-w, -200, k) : lerp(kW + 200, -200, k);
+		x += ko * (from_left ? kW + 400 : -(kW + 400));
+		p.setPen(Qt::NoPen);
+		p.setBrush(c);
+		p.drawPolygon(QPolygonF({QPointF(x + 120, cy - h / 2), QPointF(x + w + 120, cy - h / 2), QPointF(x + w, cy + h / 2),
+					 QPointF(x, cy + h / 2)}));
+	}
 	// Шторка из наклонных полос: закрывает экран на стыке сцен.
 	void wipe(QPainter &p, double t, double t0, bool flip)
 	{
 		const double d = 0.42;
 		if (t < t0 - d / 2 - 0.1 || t > t0 + d / 2 + 0.15)
 			return;
-		const QColor cols[] = {col::orange, col::violet, col::bg};
+		const QColor cols[] = {col::accent, col::accent_dk, col::bg};
 		for (int i = 0; i < 3; i++) {
 			const double u = (t - (t0 - d / 2) - i * 0.04) / d;
 			if (u <= 0 || u >= 1)
@@ -1468,8 +1572,8 @@ private:
 	void draw_logo(QPainter &p, QPointF c, double s)
 	{
 		const QRectF box(c.x() - 90 * s, c.y() - 90 * s, 180 * s, 180 * s);
-		p.fillRect(box.translated(14 * s, 14 * s), col::violet);
-		checker(p, box, 30 * s, col::orange, col::coral);
+		p.fillRect(box.translated(14 * s, 14 * s), col::accent_dk);
+		checker(p, box, 30 * s, col::accent, col::accent_lt);
 		p.fillRect(box.adjusted(30 * s, 30 * s, -30 * s, -30 * s), col::bg);
 		draw_icon(p, "mic", c, 96 * s, col::white, 2.0);
 	}
@@ -1478,6 +1582,7 @@ private:
 	{
 		const double out = ramp(t, T_STREAM - 0.2, T_STREAM + 0.05);
 		hud(p, s_.sec_intro, 1, 8, t - 0.3, out);
+		band(p, 470, 250, t - bt(2) + 0.08, out, col::accent_dk);
 		const double a = ease_out_back(ramp(t, 0.35, 0.95));
 		if (a > 0) {
 			p.save();
@@ -1488,13 +1593,13 @@ private:
 			p.restore();
 		}
 		big_text(p, s_.w_intro, QPointF(760, 560), 300, t - bt(2), out, col::white);
-		big_text(p, s_.title, QPointF(780, 660), 92, t - bt(4), out, col::orange, Qt::AlignLeft, col::bg);
+		big_text(p, s_.title, QPointF(780, 660), 92, t - bt(4), out, col::white, Qt::AlignLeft, col::accent);
 		tag_line(p, QPointF(780, 700), s_.p_obs, s_.tag_intro, t - bt(5), out);
 		// На каждой доле — квадратики разлетаются от логотипа
 		const int b = beat_index(t);
 		if (b != last_intro_beat_ && t > 0.4 && t < T_STREAM - 0.3) {
 			last_intro_beat_ = b;
-			parts_.burst(QPointF(560, 470), 10, 300, 700, {col::orange, col::white, col::violet}, 4, 0.7, 14, 300);
+			parts_.burst(QPointF(560, 470), 10, 300, 700, {col::accent, col::white, col::accent_dk}, 4, 0.7, 14, 300);
 		}
 	}
 
@@ -1509,15 +1614,33 @@ private:
 	Pose fly(double t, double t0, double t1, double side)
 	{
 		const double u = (t - t0) / (t1 - t0);
-		Pose in{kW / 2.0 + side * 1300, kH / 2.0 + 260, 1400, -14, side * -55, side * -6, 0.9, 1};
-		Pose a{kW / 2.0 + side * 120, kH / 2.0 + 10, 120, -9, side * -16, 0, 0.86, 1};
-		Pose b{kW / 2.0 - side * 120, kH / 2.0 - 15, -180, -5, side * 10, 0, 0.86, 1};
-		Pose out{kW / 2.0 - side * 1500, kH / 2.0 - 80, 600, -10, side * 55, side * 5, 0.9, 1};
+		Pose in{kW / 2.0 + side * 1300, kH / 2.0 + 260, 1400, -14, side * -55, side * -6, 0.96, 1};
+		Pose a{kW / 2.0 + side * 110, kH / 2.0 + 10, 120, -9, side * -16, 0, 0.96, 1};
+		Pose b{kW / 2.0 - side * 110, kH / 2.0 - 10, -160, -5, side * 10, 0, 0.96, 1};
+		Pose out{kW / 2.0 - side * 1500, kH / 2.0 - 80, 600, -10, side * 55, side * 5, 0.96, 1};
 		if (u < 0.16)
 			return mix(in, a, ease_out(u / 0.16));
 		if (u < 0.9)
 			return mix(a, b, ease_in_out((u - 0.16) / 0.74));
 		return mix(b, out, ease_in((u - 0.9) / 0.1));
+	}
+
+	// После дропа: влёт, общий план, наезд на растущий счётчик зрителей.
+	Pose after_camera(double t) const
+	{
+		const double t0 = T_AFTER - 0.1;
+		Pose in{kW / 2.0 - 1300, kH / 2.0 + 260, 1400, -14, 55, 6, 0.96, 1};
+		Pose wide{kW / 2.0 - 50, kH / 2.0 + 10, 100, -8, 12, 0, 0.96, 1};
+		Pose close{560, 70, -80, -5, 7, 0, 1.4, 1}; // счётчик и чат крупно
+		if (t < t0 + 0.45)
+			return mix(in, wide, ease_out((t - t0) / 0.45));
+		Pose drift = wide;
+		drift.cx -= (t - t0 - 0.45) * 30;
+		if (t < t0 + 1.1)
+			return drift;
+		Pose hold = close;
+		hold.cx -= (t - t0 - 1.75) * 25;
+		return mix(drift, hold, ease_in_out((t - t0 - 1.1) / 0.65));
 	}
 
 	void scene_before(QPainter &p, double t)
@@ -1527,23 +1650,21 @@ private:
 			chat_.push_back({s_.chat_before[chat_before_n_], bt(9 + chat_before_n_ * 1.5)});
 			chat_before_n_++;
 		}
-		big_text(p, s_.w_before, QPointF(kW - 70, 330), 360, t - T_STREAM - 0.1, out, QColor(0x2A, 0x2A, 0x30),
-			 Qt::AlignRight);
 		Pose pose = fly(t, T_STREAM - 0.1, T_GROOVE + 0.2, 1);
 		// Плохой звук: картинку иногда дёргает
 		const int glitch = (int)(t * 15);
 		if (hash01(glitch * 3) > 0.8)
 			pose.cx += (hash01(glitch * 3 + 1) - 0.5) * 24;
 		const QImage img = stream_.render(t, false, viewers_at(t), chat_, 0);
-		const QTransform tx = draw_card(p, img, QSizeF(StreamView::TW, StreamView::TH), pose, col::coral,
+		const QTransform tx = draw_card(p, img, QSizeF(StreamView::TW, StreamView::TH), pose, QColor(0x55, 0x5B, 0x6A),
 						QColor(0, 0, 0, 200), 22);
 		const int beat = beat_index(t);
 		if (beat != last_before_beat_ && t > T_STREAM + 0.4 && out <= 0) {
 			last_before_beat_ = beat;
-			parts_.icons(tx.map(StreamView::viewers_pos()), 2, {"user-minus"}, {col::coral, col::gray}, 60, -120, 1.1, 40);
+			parts_.icons(tx.map(StreamView::viewers_pos()), 2, {"user-minus"}, {col::white, col::gray}, 60, -120, 1.1, 40);
 		}
 		hud(p, s_.sec_stream, 2, 8, t - T_STREAM - 0.1, out);
-		big_text(p, s_.w_before, QPointF(70, 1000), 150, t - T_STREAM - 0.3, out, col::coral);
+		big_text(p, s_.w_before, QPointF(70, 1000), 150, t - T_STREAM - 0.3, out, col::white, Qt::AlignLeft, QColor(0x3A, 0x40, 0x50));
 		tag_line(p, QPointF(70, 1018), s_.p_chat, s_.tag_before, t - bt(11), out, 26);
 	}
 
@@ -1558,24 +1679,23 @@ private:
 			chat_.push_back({s_.chat_after[chat_after_n_], T_AFTER + 0.3 + chat_after_n_ * kBeat * 0.5});
 			chat_after_n_++;
 		}
-		big_text(p, s_.w_after, QPointF(70, 330), 360, t - T_AFTER - 0.05, out, QColor(0x2A, 0x2A, 0x30));
-		Pose pose = fly(t, T_AFTER - 0.1, T_FEAT + 0.2, -1);
+		Pose pose = after_camera(t);
 		pose.scale *= 1 + 0.012 * pulse(t);
 		const double pop = std::exp(-since_beat(t) * 10) * kick(t);
 		const QImage img = stream_.render(t, true, viewers_at(t), chat_, pop);
-		const QTransform tx = draw_card(p, img, QSizeF(StreamView::TW, StreamView::TH), pose, col::orange,
-						QColor(0x8C, 0x3B, 0xFF, 255), 22);
+		const QTransform tx = draw_card(p, img, QSizeF(StreamView::TW, StreamView::TH), pose, col::accent,
+						col::accent_dk, 22);
 		// Зрители прибывают: иконки и осколки на каждую долю
 		const int beat = beat_index(t);
 		if (beat != last_after_beat_ && out <= 0 && t > T_AFTER + 0.2) {
 			last_after_beat_ = beat;
 			parts_.icons(tx.map(StreamView::viewers_pos()), 3, {"user-plus", "heart", "user-plus"},
-				     {col::orange, col::white, col::violet2}, 90, 300, 1.3, 46);
-			parts_.icons(tx.map(StreamView::follow_pos()), 2, {"heart"}, {col::violet2, col::white}, 60, 240, 1.2, 40);
-			parts_.burst(tx.map(StreamView::viewers_pos()), 10, 250, 700, {col::orange, col::white, col::violet}, 4, 0.6, 14, 500);
+				     {col::accent, col::white, col::accent_lt}, 90, 300, 1.3, 46);
+			parts_.icons(tx.map(StreamView::follow_pos()), 2, {"heart"}, {col::accent_lt, col::white}, 60, 240, 1.2, 40);
+			parts_.burst(tx.map(StreamView::viewers_pos()), 10, 250, 700, {col::accent, col::white, col::accent_dk}, 4, 0.6, 14, 500);
 		}
 		hud(p, s_.sec_stream, 4, 8, t - T_AFTER - 0.1, out);
-		big_text(p, s_.w_after, QPointF(kW - 70, 1000), 150, t - T_AFTER - 0.2, out, col::orange, Qt::AlignRight);
+		big_text(p, s_.w_after, QPointF(kW - 70, 1000), 150, t - T_AFTER - 0.2, out, col::white, Qt::AlignRight, col::accent);
 		const QFont f = mono_font(26);
 		const double w = QFontMetricsF(f).horizontalAdvance(QStringLiteral("[%1]: %2_").arg(s_.p_live, s_.tag_after)) + 26 * 1.2;
 		tag_line(p, QPointF(kW - 70 - w, 1018), s_.p_live, s_.tag_after, t - T_AFTER - 0.6, out, 26);
@@ -1624,7 +1744,7 @@ private:
 		pose.cy += 6 * std::sin(t * 1.3);
 
 		interact(t);
-		draw_window(p, pose, t >= T_RISE && t < T_DROP ? col::orange : col::line);
+		draw_window(p, pose, t >= T_RISE && t < T_DROP ? col::accent : col::line);
 
 		// Подсветка частей окна
 		const double hl_levels = ramp(t, bt(18.5), bt(19)) * (1 - ramp(t, bt(19.8), bt(20.2)));
@@ -1632,7 +1752,7 @@ private:
 		const double hl_eq = ramp(t, bt(21.6), bt(22)) * (1 - ramp(t, bt(22.4), bt(22.8)));
 		spotlight(p, map_rect(meters_rows), hl_levels);
 		callout(p, map_rect(meters_rows), s_.call_levels, hl_levels);
-		spotlight(p, map_rect(status), hl_ai, col::violet2);
+		spotlight(p, map_rect(status), hl_ai, col::accent_lt);
 		callout(p, map_rect(status), s_.call_ai, hl_ai, false);
 		spotlight(p, map_rect(eqr), hl_eq);
 		callout(p, map_rect(eqr), s_.call_spectrum, hl_eq);
@@ -1652,12 +1772,12 @@ private:
 			for (int i = 0; i < segs; i++) {
 				const bool on = (i + 1) <= charge * segs;
 				p.fillRect(QRectF(b.left() + i * sw + 2, b.bottom() + 22, sw - 4, 16),
-					   on ? (i % 2 ? col::coral : col::orange) : QColor(255, 255, 255, 34));
+					   on ? (i % 2 ? col::accent_lt : col::accent) : QColor(255, 255, 255, 34));
 			}
 			if (t > T_CLICK) {
 				chip(p, QPointF(b.center().x(), b.bottom() + 84),
-				     s_.listening + QStringLiteral("  %1%").arg((int)(charge * 100)), 28, col::bg, col::orange, 1,
-				     ramp(t, T_CLICK, T_CLICK + 0.2), "mic", col::orange);
+				     s_.listening + QStringLiteral("  %1%").arg((int)(charge * 100)), 28, col::bg, col::accent_lt, 1,
+				     ramp(t, T_CLICK, T_CLICK + 0.2), "mic", col::accent);
 				for (int i = 0; i < 3; i++) {
 					const double a = t - bt(29 + i);
 					if (a >= 0 && a < kBeat) {
@@ -1665,7 +1785,7 @@ private:
 						p.save();
 						p.setOpacity(1 - ramp(a, kBeat * 0.65, kBeat));
 						big_text(p, QString::number(3 - i), QPointF(kW - 260, kH / 2.0 + 170 * s), 420 * s, 1, 0,
-							 i == 2 ? col::orange : col::white, Qt::AlignHCenter);
+							 i == 2 ? col::accent : col::white, Qt::AlignHCenter);
 						p.restore();
 					}
 				}
@@ -1675,12 +1795,12 @@ private:
 		if (t < T_RISE) {
 			hud(p, s_.sec_live, 3, 8, t - T_GROOVE - 0.2, ramp(t, T_RISE - 0.2, T_RISE));
 			big_text(p, s_.w_groove, QPointF(70, 1000), 130, t - T_GROOVE - 0.3, ramp(t, T_RISE - 0.25, T_RISE), col::white,
-				 Qt::AlignLeft, col::violet);
+				 Qt::AlignLeft, col::accent_dk);
 			tag_line(p, QPointF(70, 1018), s_.p_filter, s_.tag_groove, t - T_GROOVE - 0.8, ramp(t, T_RISE - 0.25, T_RISE), 26);
 		} else if (t < T_DROP) {
 			hud(p, s_.sec_setup, 3, 8, t - T_RISE, ramp(t, T_DROP - 0.1, T_DROP));
 			big_text(p, s_.w_rise, QPointF(70, 1000), 130, t - T_RISE - 0.1, ramp(t, T_DROP - 0.1, T_DROP), col::white,
-				 Qt::AlignLeft, col::orange);
+				 Qt::AlignLeft, col::accent);
 			tag_line(p, QPointF(70, 1018), s_.p_setup, s_.tag_rise, t - T_CLICK, ramp(t, T_DROP - 0.1, T_DROP), 26);
 		}
 		if (t >= T_DROP) {
@@ -1696,10 +1816,10 @@ private:
 				p.scale(s, s);
 				const QFont f = display_font(170);
 				const double w = QFontMetricsF(f).horizontalAdvance(s_.w_done);
-				p.fillRect(QRectF(-w / 2 - 50 + 16, -110 + 16, w + 100, 200), col::violet);
-				p.fillRect(QRectF(-w / 2 - 50, -110, w + 100, 200), col::orange);
+				p.fillRect(QRectF(-w / 2 - 50 + 16, -110 + 16, w + 100, 200), col::accent_dk);
+				p.fillRect(QRectF(-w / 2 - 50, -110, w + 100, 200), col::accent);
 				p.setFont(f);
-				p.setPen(col::bg);
+				p.setPen(col::white);
 				p.shear(-0.2, 0);
 				p.drawText(QPointF(-w / 2 + 30, 55), s_.w_done);
 				p.restore();
@@ -1707,10 +1827,10 @@ private:
 		}
 		if (t >= T_DROP && !drop_burst_) {
 			drop_burst_ = true;
-			parts_.burst(bc, 140, 400, 1700, {col::orange, col::white, col::violet, col::coral}, 4, 1.2, 22, 900);
+			parts_.burst(bc, 140, 400, 1700, {col::accent, col::white, col::accent_dk, col::accent_lt}, 4, 1.2, 22, 900);
 		}
 		if (t >= T_CLICK && t < T_DROP && frame_no_ % 2 == 0)
-			parts_.implode(bc, 3 + (int)(8 * ramp(t, T_CLICK, T_DROP)), 520, frame_no_ % 4 ? col::orange : col::white);
+			parts_.implode(bc, 3 + (int)(8 * ramp(t, T_CLICK, T_DROP)), 520, frame_no_ % 4 ? col::accent : col::white);
 	}
 
 	// Мышь и значения в окне: перетаскивание точек, нажатие кнопки, морфинг кривой.
@@ -1745,7 +1865,7 @@ private:
 			mock::send_mouse(eq_, QEvent::MouseMove, pt, Qt::LeftButton);
 			cursor_ = map_pt(card_rect(eq_).topLeft() + pt);
 			if (frame_no_ % 2 == 0)
-				parts_.burst(cursor_, 2, 80, 260, {col::orange, col::white}, 0, 0.4, 8, 200);
+				parts_.burst(cursor_, 2, 80, 260, {col::accent, col::white}, 0, 0.4, 8, 200);
 			if (k > kBeat * 0.8) {
 				drag_released_[d.node] = true;
 				mock::send_mouse(eq_, QEvent::MouseButtonRelease, pt, Qt::NoButton);
@@ -1809,8 +1929,6 @@ private:
 		link_->set_double(row.key, v);
 		step_ui(0);
 
-		big_text(p, s_.w_feat, QPointF(kW / 2.0, 330), 300, t - T_FEAT - 0.05, out, QColor(0x2A, 0x2A, 0x30),
-			 Qt::AlignHCenter);
 		Pose a{-500, kH / 2.0 + 40, 900, -8, 42, 0, 0.95, 1};
 		Pose b{620, kH / 2.0 + 50, 0, -5, 16, 0, 1.0, 1};
 		Pose pose = mix(a, b, ease_out(in));
@@ -1818,30 +1936,31 @@ private:
 		pose.scale *= 1 + 0.012 * pulse(t);
 		draw_window(p, pose);
 		const QRectF gr = card_rect(g).adjusted(-6, -4, 6, 6);
-		spotlight(p, map_rect(gr), ramp(t, T_FEAT + 0.1, T_FEAT + 0.3) * (1 - out), i % 2 ? col::violet2 : col::orange);
+		spotlight(p, map_rect(gr), ramp(t, T_FEAT + 0.1, T_FEAT + 0.3) * (1 - out), i % 2 ? col::accent_lt : col::accent);
 		const double frac = (v - row.min) / (row.max - row.min);
 		const QRectF sr = card_rect(row.slider);
 		const QPointF handle = map_pt(QPointF(sr.left() + 7 + frac * (sr.width() - 14), sr.center().y()));
 		if (u > 0.05 && u < 0.4 && frame_no_ % 2 == 0)
-			parts_.burst(handle, 3, 100, 420, {col::orange, col::white}, 0, 0.45, 9, 300);
+			parts_.burst(handle, 3, 100, 420, {col::accent, col::white}, 0, 0.45, 9, 300);
 
 		// Карточка функции — переворачивается на каждую долю
 		const QImage &card = feature_cards_[(size_t)i];
 		const double k = ease_out_back(u / 0.3);
 		Pose cp{1440, 530, (1 - k) * -300, -6, -10 + (1 - k) * 70, (1 - k) * 4, 1.0, clamp01(u / 0.08)};
 		cp.cx += ease_in(out) * 700;
-		draw_card(p, card, QSizeF(560, 582), cp, QColor(0, 0, 0, 0), i % 2 ? col::orange : col::violet, 16);
+		draw_card(p, card, QSizeF(560, 582), cp, QColor(0, 0, 0, 0), i % 2 ? col::accent : col::accent_dk, 16);
 		if (feat_beat_ != i) {
 			feat_beat_ = i;
-			parts_.burst(QPointF(1440 - 280, 530), 16, 300, 900, {col::orange, col::violet, col::white}, 4, 0.6, 16, 600);
-			parts_.burst(QPointF(1440 + 280, 530), 16, 300, 900, {col::orange, col::violet, col::white}, 4, 0.6, 16, 600);
+			parts_.burst(QPointF(1440 - 280, 530), 16, 300, 900, {col::accent, col::accent_dk, col::white}, 4, 0.6, 16, 600);
+			parts_.burst(QPointF(1440 + 280, 530), 16, 300, 900, {col::accent, col::accent_dk, col::white}, 4, 0.6, 16, 600);
 		}
 		// Индикатор: 8 квадратов под карточкой
 		for (int j = 0; j < 8; j++) {
 			const QRectF r(1440 - 4 * 34 + j * 34 + 4, 862, 26, 26);
-			p.fillRect(r, j <= i ? (j % 2 ? col::violet : col::orange) : QColor(255, 255, 255, 30));
+			p.fillRect(r, j <= i ? (j % 2 ? col::accent_dk : col::accent) : QColor(255, 255, 255, 30));
 		}
 		hud(p, s_.sec_feat, 5, 8, t - T_FEAT - 0.1, out);
+		big_text(p, s_.w_feat, QPointF(kW - 70, 190), 110, t - T_FEAT - 0.2, out, col::white, Qt::AlignRight, col::accent);
 		tag_line(p, QPointF(70, 1018), s_.p_filter, s_.tag_feat, t - T_FEAT - 0.4, out, 26);
 	}
 
@@ -1849,7 +1968,6 @@ private:
 	{
 		const double u = t - T_LANG;
 		const double out = ramp(t, T_BREAK - 0.15, T_BREAK);
-		big_text(p, s_.w_lang, QPointF(kW / 2.0, 300), 280, u - 0.05, out, QColor(0x2A, 0x2A, 0x30), Qt::AlignHCenter);
 		const int n = (int)lang_cards_.size();
 		const double step_deg = 360.0 / n;
 		const double base = lerp(0, -step_deg * (n - 1), smooth(ramp(u, 0.15, 3.6)));
@@ -1873,15 +1991,15 @@ private:
 			const double rad = it.a * M_PI / 180;
 			Pose pose;
 			pose.cx = kW / 2.0 + R * std::sin(rad);
-			pose.cy = kH / 2.0 + 90;
+			pose.cy = kH / 2.0 + 40;
 			pose.z = it.z + (1 - in) * 1200;
 			pose.rx = -6;
 			pose.ry = -it.a;
-			pose.scale = 0.7;
+			pose.scale = 0.68;
 			pose.cy += ease_in(out) * 900;
 			pose.opacity = 0.3 + 0.7 * std::pow(std::cos(rad), 3);
 			const bool is_front = std::abs(it.a) < step_deg / 2;
-			draw_card(p, lang_cards_[(size_t)it.i], kCard * kCardScale, pose, is_front ? col::orange : col::line,
+			draw_card(p, lang_cards_[(size_t)it.i], kCard * kCardScale, pose, is_front ? col::accent : col::line,
 				  QColor(0, 0, 0, 160), 16);
 			if (std::abs(it.a) < best) {
 				best = std::abs(it.a);
@@ -1896,13 +2014,14 @@ private:
 		if (front >= 0) {
 			p.save();
 			const QString name = QString::fromUtf8(lang_order_[(size_t)front].name);
-			big_text(p, name, QPointF(kW / 2.0, 1010), 110, (t - lang_change_t_) + 0.05, out, col::white, Qt::AlignHCenter,
-				 front % 2 ? col::violet : col::orange);
+			big_text(p, name, QPointF(kW / 2.0, 230), 110, (t - lang_change_t_) + 0.05, out, col::white, Qt::AlignHCenter,
+				 front % 2 ? col::accent_dk : col::accent);
 			p.restore();
 			chip(p, QPointF(kW - 160, 70), QStringLiteral("[ %1/12 ]").arg(front + 1, 2, 10, QChar('0')), 26, col::bg, col::white,
 			     1, 1 - out, "globe", col::line);
 		}
-		tag_line(p, QPointF(70, 120), s_.p_lang, s_.tag_lang, u - 0.4, out, 26);
+		big_text(p, s_.w_lang, QPointF(70, 1000), 130, u - 0.1, out, col::white, Qt::AlignLeft, col::accent);
+		tag_line(p, QPointF(70, 1018), s_.p_lang, s_.tag_lang, u - 0.4, out, 26);
 	}
 
 	// Окно обновления в стиле консоли: шапка, сегментная полоса, проверки.
@@ -1916,7 +2035,7 @@ private:
 		q.setFont(mono_font(34));
 		q.setPen(col::white);
 		q.drawText(QPointF(40, 58), s_.upd_head);
-		q.setPen(col::orange);
+		q.setPen(col::accent);
 		q.drawText(QPointF(40 + QFontMetricsF(mono_font(34)).horizontalAdvance(s_.upd_head + "  "), 58), QStringLiteral(">>"));
 		const double prog = ease_out(ramp(t, bt(60.2), bt(62)));
 		const bool done = t >= bt(62.8);
@@ -1926,40 +2045,40 @@ private:
 		const int segs = 30;
 		for (int i = 0; i < segs; i++) {
 			const bool on = (i + 1) <= prog * segs;
-			q.fillRect(QRectF(40 + i * 37.3, 130, 31, 40), on ? (done ? col::violet2 : col::orange) : QColor(255, 255, 255, 26));
+			q.fillRect(QRectF(40 + i * 37.3, 130, 31, 40), on ? (done ? col::accent_lt : col::accent) : QColor(255, 255, 255, 26));
 		}
 		auto row = [&](double y, const QString &icon, const QString &text, double k) {
 			if (k <= 0)
 				return;
 			q.setOpacity(k);
-			draw_icon(q, icon, QPointF(62, y - 12), 40, col::orange, 2.2);
+			draw_icon(q, icon, QPointF(62, y - 12), 40, col::accent, 2.2);
 			q.setFont(mono_font(32));
 			q.setPen(col::white);
 			q.drawText(QPointF(104, y), text);
 			const QString dots = QString(40 - text.size(), QChar('.'));
 			q.setPen(col::dim);
 			q.drawText(QPointF(104 + QFontMetricsF(mono_font(32)).horizontalAdvance(text + " "), y), dots);
-			q.setPen(col::orange);
+			q.setPen(col::accent);
 			q.drawText(QPointF(1080, y), QStringLiteral("OK"));
-			draw_icon(q, "check", QPointF(1145, y - 12), 38, col::orange, 2.6);
+			draw_icon(q, "check", QPointF(1145, y - 12), 38, col::accent, 2.6);
 			q.setOpacity(1);
 		};
 		row(250, "shield-check", s_.upd_sig, ramp(t, bt(62), bt(62.2)));
 		row(320, "lock", s_.upd_sha, ramp(t, bt(62.4), bt(62.6)));
 		if (done) {
-			q.fillRect(QRectF(0, 420, 1200, 180), col::orange);
-			draw_icon(q, "check", QPointF(80, 510), 72, col::bg, 3);
+			q.fillRect(QRectF(0, 420, 1200, 180), col::accent);
+			draw_icon(q, "check", QPointF(80, 510), 72, col::white, 3);
 			q.setFont(display_font(64));
-			q.setPen(col::bg);
+			q.setPen(col::white);
 			q.drawText(QPointF(140, 534), s_.upd_ready);
 		}
 		q.end();
-		const QTransform tx = draw_card(p, img, QSizeF(1000, 500), pose, col::line, col::violet, 18);
+		const QTransform tx = draw_card(p, img, QSizeF(1000, 500), pose, col::line, col::accent_dk, 18);
 		if (prog > 0 && prog < 1 && frame_no_ % 2 == 0)
-			parts_.burst(tx.map(QPointF(40 + 1120 * prog, 150)), 3, 100, 420, {col::orange, col::white}, 0, 0.4, 9, 300);
+			parts_.burst(tx.map(QPointF(40 + 1120 * prog, 150)), 3, 100, 420, {col::accent, col::white}, 0, 0.4, 9, 300);
 		if (done && !upd_done_burst_) {
 			upd_done_burst_ = true;
-			parts_.burst(tx.map(QPointF(600, 510)), 70, 300, 1200, {col::orange, col::white, col::violet}, 4, 0.9, 18, 800);
+			parts_.burst(tx.map(QPointF(600, 510)), 70, 300, 1200, {col::accent, col::white, col::accent_dk}, 4, 0.9, 18, 800);
 		}
 	}
 
@@ -1995,7 +2114,7 @@ private:
 		const QSizeF dsize = dialog_size_ * 2.3;
 		QTransform dtx;
 		if (dp.opacity > 0)
-			dtx = draw_card(p, dialog_, dsize, dp, col::orange, col::violet, 16);
+			dtx = draw_card(p, dialog_, dsize, dp, col::accent, col::accent_dk, 16);
 		const QPointF install_pt = dtx.map(install_center_ * kDpr);
 		if (t >= bt(57) && t < bt(58)) {
 			if (upd_from_.isNull())
@@ -2020,7 +2139,7 @@ private:
 			progress_card(p, t, pp);
 		}
 		hud(p, s_.sec_upd, 7, 8, t - T_BREAK - 0.1, out);
-		big_text(p, s_.w_upd, QPointF(70, 1000), 130, t - T_BREAK - 0.3, out, col::white, Qt::AlignLeft, col::violet);
+		big_text(p, s_.w_upd, QPointF(70, 1000), 130, t - T_BREAK - 0.3, out, col::white, Qt::AlignLeft, col::accent_dk);
 		tag_line(p, QPointF(70, 1018), s_.p_github, s_.tag_upd, t - T_BREAK - 0.8, out, 26);
 	}
 
@@ -2029,13 +2148,13 @@ private:
 		const double u = t - T_DROP2;
 		if (!finale_burst_ && u >= 0) {
 			finale_burst_ = true;
-			parts_.burst(QPointF(kW / 2.0, 460), 160, 400, 1800, {col::orange, col::violet, col::white, col::coral}, 4, 1.3, 22, 900);
+			parts_.burst(QPointF(kW / 2.0, 460), 160, 400, 1800, {col::accent, col::accent_dk, col::white, col::accent_lt}, 4, 1.3, 22, 900);
 		}
 		for (int i = 0; i < 2; i++) {
 			const double st = i ? T_STAB2 : T_STAB1;
 			if (t >= st && !stab_done_[i]) {
 				stab_done_[i] = true;
-				parts_.burst(QPointF(kW / 2.0, 640), 90, 400, 1500, {col::orange, col::violet, col::white}, 4, 0.9, 18, 800);
+				parts_.burst(QPointF(kW / 2.0, 640), 90, 400, 1500, {col::accent, col::accent_dk, col::white}, 4, 0.9, 18, 800);
 			}
 		}
 		const double punch = 1 + 0.04 * pulse(t) + 0.05 * std::exp(-(t - T_STAB1) * 10) * (t >= T_STAB1) +
@@ -2044,6 +2163,7 @@ private:
 		p.translate(kW / 2.0, 540);
 		p.scale(punch, punch);
 		p.translate(-kW / 2.0, -540);
+		band(p, 380, 260, u + 0.05, 0, col::accent, false);
 		big_text(p, s_.w_fin, QPointF(kW / 2.0, 470), 290, u - 0.02, 0, col::white, Qt::AlignHCenter);
 		const double a = ease_out_back(ramp(u, 0.25, 0.7));
 		if (a > 0) {
@@ -2053,7 +2173,7 @@ private:
 			draw_logo(p, QPointF(0, 0), 1.0);
 			p.restore();
 		}
-		big_text(p, s_.title, QPointF(660, 690), 92, u - 0.35, 0, col::orange, Qt::AlignLeft, col::bg);
+		big_text(p, s_.title, QPointF(660, 690), 92, u - 0.35, 0, col::white, Qt::AlignLeft, col::accent);
 		{
 			const QFont f = mono_font(26);
 			const double w = QFontMetricsF(f).horizontalAdvance(s_.subtitle) + 26 * 1.3;
@@ -2061,7 +2181,7 @@ private:
 		}
 		const double cta = ease_out_back((u - 0.9) / 0.3);
 		if (cta > 0)
-			chip(p, QPointF(kW / 2.0, 850), s_.fin_cta, 40, col::orange, col::bg, 0.75 + 0.25 * cta + 0.03 * pulse(t),
+			chip(p, QPointF(kW / 2.0, 850), s_.fin_cta, 40, col::accent, col::white, 0.75 + 0.25 * cta + 0.03 * pulse(t),
 			     clamp01(cta * 2), "download");
 		p.restore();
 		tag_line(p, QPointF(kW / 2.0 - 330, 930), s_.p_github, s_.tag_fin, u - 1.2, 0, 30);
