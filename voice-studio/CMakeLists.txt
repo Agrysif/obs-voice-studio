@@ -119,8 +119,9 @@ if(VOICE_STUDIO_BUILD_PLUGIN)
     target_link_libraries(voice-studio-ui-preview PRIVATE voice-studio-ui $<$<PLATFORM_ID:Windows>:shell32>)
 
     # Демо-ролик под музыку: окно в 3D, частицы, сцена трансляции (кадры → ffmpeg).
+    find_package(Qt6 REQUIRED COMPONENTS Svg)
     add_executable(voice-studio-demo-video tests/demo-video.cpp)
-    target_link_libraries(voice-studio-demo-video PRIVATE voice-studio-ui)
+    target_link_libraries(voice-studio-demo-video PRIVATE voice-studio-ui Qt6::Svg)
     target_compile_definitions(voice-studio-demo-video PRIVATE
       VOICE_STUDIO_UPDATE_REPO="${VOICE_STUDIO_UPDATE_REPO}" _USE_MATH_DEFINES)
 
