@@ -90,7 +90,8 @@ void LiveBlock::showEvent(QShowEvent *)
 		active_ = true;
 	}
 	clock_.restart();
-	timer_.start();
+	if (!manual_)
+		timer_.start();
 }
 
 void LiveBlock::hideEvent(QHideEvent *)
@@ -146,7 +147,18 @@ void LiveBlock::update_bar(Bar &b, double rms, double peak, double dt)
 
 void LiveBlock::tick()
 {
-	const double dt = std::clamp(clock_.restart() / 1000.0, 0.001, 0.1);
+	advance(std::clamp(clock_.restart() / 1000.0, 0.001, 0.1));
+}
+
+void LiveBlock::step(double dt)
+{
+	advance(dt);
+	sync(); // в ролике настройки меняются плавно — кривая должна идти следом каждый кадр
+	update();
+}
+
+void LiveBlock::advance(double dt)
+{
 	ticks_++;
 
 	const LiveMeters m = link_->meters();

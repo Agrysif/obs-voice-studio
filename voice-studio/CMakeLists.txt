@@ -117,10 +117,15 @@ if(VOICE_STUDIO_BUILD_PLUGIN)
     # Просмотр живого блока в макете окна фильтра с «игрушечными» данными: окно или скриншот.
     add_executable(voice-studio-ui-preview tests/ui-preview.cpp)
     target_link_libraries(voice-studio-ui-preview PRIVATE voice-studio-ui $<$<PLATFORM_ID:Windows>:shell32>)
-    target_compile_definitions(voice-studio-ui-preview PRIVATE VOICE_STUDIO_UPDATE_REPO="${VOICE_STUDIO_UPDATE_REPO}")
+
+    # Демо-ролик под музыку: окно в 3D, частицы, сцена трансляции (кадры → ffmpeg).
+    add_executable(voice-studio-demo-video tests/demo-video.cpp)
+    target_link_libraries(voice-studio-demo-video PRIVATE voice-studio-ui)
+    target_compile_definitions(voice-studio-demo-video PRIVATE
+      VOICE_STUDIO_UPDATE_REPO="${VOICE_STUDIO_UPDATE_REPO}" _USE_MATH_DEFINES)
 
     if(MSVC)
-      foreach(t voice-studio-obs-test voice-studio-ui-preview)
+      foreach(t voice-studio-obs-test voice-studio-ui-preview voice-studio-demo-video)
         target_compile_options(${t} PRIVATE /W3 /utf-8)
         target_compile_definitions(${t} PRIVATE _CRT_SECURE_NO_WARNINGS NOMINMAX)
       endforeach()

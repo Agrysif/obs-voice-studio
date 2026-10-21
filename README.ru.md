@@ -15,7 +15,7 @@
 
 ![Голосовая студия: точки эквалайзера тянутся мышью поверх живого спектра голоса](voice-studio/docs/eq-drag-ru.gif)
 
-▶ **Видео за 36 секунд:** [demo-ru.mp4](voice-studio/docs/demo-ru.mp4) ·
+▶ **Видео за 35 секунд, с музыкой:** [demo-ru.mp4](voice-studio/docs/demo-ru.mp4) ·
 [все скриншоты](voice-studio/docs)
 
 ## Почему Голосовая студия

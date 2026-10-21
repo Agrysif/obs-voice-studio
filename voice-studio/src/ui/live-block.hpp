@@ -21,6 +21,10 @@ public:
 	explicit LiveBlock(std::shared_ptr<LiveLink> link, QWidget *parent = nullptr);
 	~LiveBlock() override;
 
+	// Запись демо-ролика кадр за кадром: время задаёт вызывающий (step), свой таймер не идёт.
+	void setManualClock(bool manual) { manual_ = manual; }
+	void step(double dt);
+
 	int heightForWidth(int w) const override;
 	bool hasHeightForWidth() const override { return true; }
 	QSize sizeHint() const override { return QSize(480, heightForWidth(480)); }
@@ -43,6 +47,7 @@ private:
 	int eq_height(int w) const;
 	int hint_height(int w) const;
 	void tick();
+	void advance(double dt);
 	void sync();
 	void update_bar(Bar &b, double rms, double peak, double dt);
 	void paint_bar(QPainter &p, const QRectF &row, const Bar &b, const QString &label, double label_w);
@@ -53,6 +58,7 @@ private:
 	QElapsedTimer clock_;
 	int ticks_ = 0;
 	bool active_ = false;
+	bool manual_ = false;
 
 	Bar in_, out_;
 	double gr_ = 0.0, gate_ = 0.0, vad_ = 0.0;

@@ -15,7 +15,7 @@ You don't need VST plugins or audio-engineering skills.
 
 ![Voice Studio: drag the EQ points on top of the live voice spectrum](voice-studio/docs/eq-drag-en.gif)
 
-▶ **Demo video (36 s):** [demo-en.mp4](voice-studio/docs/demo-en.mp4) ·
+▶ **Demo video (35 s, with music):** [demo-en.mp4](voice-studio/docs/demo-en.mp4) ·
 [all screenshots](voice-studio/docs)
 
 ## Why Voice Studio
