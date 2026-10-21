@@ -13,6 +13,8 @@
 ![12 языков](https://img.shields.io/badge/языков-12-6c4bd8)
 ![Лицензия GPL-2.0](https://img.shields.io/badge/лицензия-GPL--2.0-informational)
 
+**Скачать:** https://mytoolkit.ru/programmy/voice-studio
+
 ![Голосовая студия: точки эквалайзера тянутся мышью поверх живого спектра голоса](voice-studio/docs/eq-drag-ru.gif)
 
 ▶ **Видео за 35 секунд, с музыкой:** [demo-ru.mp4](voice-studio/docs/demo-ru.mp4) ·

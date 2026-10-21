@@ -13,6 +13,8 @@ You don't need VST plugins or audio-engineering skills.
 ![12 languages](https://img.shields.io/badge/languages-12-6c4bd8)
 ![License GPL-2.0](https://img.shields.io/badge/license-GPL--2.0-informational)
 
+**Download:** https://mytoolkit.ru/programmy/voice-studio
+
 ![Voice Studio: drag the EQ points on top of the live voice spectrum](voice-studio/docs/eq-drag-en.gif)
 
 ▶ **Demo video (35 s, with music):** [demo-en.mp4](voice-studio/docs/demo-en.mp4) ·
