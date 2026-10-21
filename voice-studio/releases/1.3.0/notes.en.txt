@@ -1,0 +1,4 @@
+• Automatic updates: the plugin finds new versions on GitHub and verifies their digital signature.
+• 12 interface languages: English, Russian and CIS languages.
+• Live block in the filter window: levels, status and an EQ curve over your voice spectrum.
+• EQ points now sit exactly on the curve and follow the cursor.
